@@ -1,4 +1,6 @@
- #to enable ffplay 
+![alt text](doc/snap.jpeg)
+
+#to enable ffplay 
     sudo apt-get install libsdl2-dev apt install libsdl2-ttf-dev
 
 
