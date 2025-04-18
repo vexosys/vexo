@@ -1,110 +1,124 @@
- #to enable ffplay 
-    sudo apt-get install libsdl2-dev apt install libsdl2-ttf-dev
+# Anaglyph
+
+Anaglyph 3D is the stereoscopic 3D effect achieved by means of encoding each eye's image using filters of different (usually chromatically opposite) colors, typically red and cyan
+
+Two camera with distance capture stereoscopic images( Left and Right Image)
+
+Difference between Left and Right Image is called Depth 
+
+There are two algorithms involved. The first uses the original image and the depth map to produce a left and a right image. The second combines these images into a red-cyan anaglyph.
+
+There are a couple ways to accomplish the first part. One is to take the original image and texture map it onto a fine mesh that lies flat in the XY plane. Then you tweak the Z values of each vertex in the mesh according to the corresponding value in the depth map. You've basically created a textured bas relief. You then use a 3D rendering algorithm to render the image from two vantage points that are offset horizontally by a small amount (essentially from the vantage point of a person's left and right eyes as they would view the bas relief).
+
+There is probably a way to directly shift the pixels left and right which is a good fast approximation to what I described above.
+
+Once you have the left and right images, you pass one through a cyan filter and one through a red filter. If you have RGB sources, that's as simple as taking the red channel from one image and combing it with the green and blue channels from the other image.
+
+Anaglyphs work best with muted colors. If you have strong primaries, it won't look as good. You can use an algorithm to reduce the color saturation of the original image before you begin.
 
 
 
 
-#Run configure with below params.
-./configure --pkg-config-flags=--static --libdir=/usr/local/lib --disable-shared --enable-debug=2 --disable-optimizations --enable-static --enable-gpl --enable-pthreads --enable-nonfree --disable-x86asm --enable-libx264 --enable-filters --enable-runtime-cpudetect --disable-lzma --disable-vaapi --enable-ffplay --disable-stripping  --disable-iconv --extra-cflags="-I/opt/homebrew/opt/sdl2/include -I/opt/homebrew/opt/x264/include" --extra-ldflags="-L/opt/homebrew/opt/sdl2/lib -L /opt/homebrew/opt/x264/lib" --enable-sdl2
 
-Font build:
-PKG_CONFIG_PATH="/usr/local/fontconfig-static/lib/pkgconfig:/usr/local/static-freetype/lib/pkgconfig:/usr/local/static-libpng/lib/pkgconfig:usr/local/static-libiconv/lib/pkgconfig"
+RGB-D images have become an essential element in fields like computer vision, robotics, and augmented reality. The "RGB" part refers to the traditional red, green, and blue color channels in standard images, while the "D" stands for depth, adding a new dimension of spatial data. This depth information enables applications to interpret the world in three dimensions, making RGB-D images a powerful tool for advanced applications.
 
-./configure --prefix=/usr/local/fontconfig-static --enable-static --disable-shared \
-CPPFLAGS="-I/usr/local/static-freetype/include -I/usr/local/static-libpng/include -I/usr/local/static-libiconv/include" \
-LDFLAGS="-L/usr/local/static-freetype/lib -L/usr/local/static-libpng/lib -L/usr/local/static-libiconv/lib" \
-LIBS="-lpng16 -lfreetype -liconv"
-make -j$(nproc)
+In this article, we’ll explore what RGB-D images are, how they are captured, and their practical applications.
 
-## MAC FFMpeg static build configs:
+What are RGB-D Images?
+RGB-D images combine conventional 2D images with depth information. In standard RGB images, each pixel contains color information based on red, green, and blue intensity. However, RGB-D images go further by also assigning a depth value to each pixel, allowing for a representation of how far each pixel is from the sensor.
 
-# TAG Stable build  
+This combination of color and depth enables the construction of 3D models, making it highly valuable for applications that require spatial awareness or real-world interaction.
 
-PKG_CONFIG_PATH="/usr/local/sdl2-static/lib/pkgconfig:/usr/local/x264-static/lib/pkgconfig:/opt/homebrew/Cellar/sdl2_ttf/2.24.0/lib/pkgconfig:/usr/local/static-expat/lib/pkgconfig:/usr/local/static-bzip2/lib/pkgconfig:/usr/local/static-zlib/lib/pkgconfig:/usr/local/static-brotli/lib/pkgconfig:/usr/local/static-libiconv/lib/pkgconfig" \
-./configure --pkg-config-flags=--static \
-    --prefix=/usr/local/ffmpeg-static \
-    --extra-cflags="-I/usr/local/sdl2-static/include -I/usr/local/x264-static/include -I/opt/homebrew/Cellar/sdl2_ttf/2.24.0/include/SDL2 -I/usr/local/fontconfig-static/include -I/usr/local/static-expat/include -I/usr/local/static-bzip2/include -I/usr/local/static-zlib/include -I/usr/local/static-brotli/include -I/usr/local/static-libiconv/include" \
-    --extra-ldflags="-L/usr/local/sdl2-static/lib -L/opt/homebrew/Cellar/sdl2_ttf/2.24.0/lib -L/usr/local/x264-static/lib -L/usr/local/fontconfig-static/lib -L/usr/local/static-expat/lib -L/usr/local/static-bzip2/lib -L/usr/local/static-zlib/lib -L/usr/local/static-brotli/lib  -L/usr/local/static-libiconv/lib" \
-    --extra-libs="-lpthread -lm -lexpat -lbz2 -lz -lbrotlidec -lbrotlicommon -liconv" \
-    --enable-gpl \
-    --enable-nonfree \
-    --enable-static \
-    --disable-shared \
-    --enable-libx264 \
-    --enable-filters \
-    --enable-runtime-cpudetect \
-    --disable-lzma \
-    --disable-vaapi \
-    --enable-ffplay \
-    --enable-sdl2 \
-    --disable-stripping \
-    --disable-iconv \
-    --disable-doc \
-    --disable-x86asm \
-    --enable-libfontconfig --disable-xlib  --disable-libxcb
+Components of an RGB-D Image
+RGB Channels: The traditional color image composed of red, green, and blue pixels.
+Depth Channel: A single channel representing the distance from the camera or sensor to the object in the scene. This is often represented as grayscale, where darker values indicate objects closer to the camera, and lighter values indicate farther objects.
+How RGB-D Images are Captured
+RGB-D images are captured using specialized devices that can simultaneously record color and depth. These devices often utilize two different methods for capturing depth information:
 
-#make
-make clean && make -j64
+1. Structured Light
+Structured light sensors project an infrared pattern onto the scene and measure its deformation to estimate depth. One well-known example is Microsoft's Kinect sensor. The pattern is distorted depending on how far an object is from the sensor, allowing the device to calculate depth.
 
+2. Time-of-Flight (ToF)
+Time-of-Flight cameras calculate the time it takes for light (typically infrared) to bounce back from an object and return to the sensor. The distance is determined based on the speed of light and the time delay.
 
+3. Stereo Vision
+Stereo vision involves using two cameras placed slightly apart from each other. By comparing the two images, the system can compute depth based on the differences between the two perspectives.
 
+Devices Capturing RGB-D Images
+Several devices can capture RGB-D images, including:
 
-Note: 
-For static build we need to rename sdl2, h264 dynamic libs in the their installed path.
+Microsoft Kinect: One of the most popular consumer-grade sensors.
+Intel RealSense: A family of depth cameras commonly used for robotic and AR/VR applications.
+Apple LiDAR Scanner: Used in newer iPhones and iPads to capture depth information for AR experiences.
+RGB-D Image Processing: Simulating Depth Maps and Visualizing RGB Images in Python
+In this section, we load an RGB image and simulate a depth map using Python, OpenCV, and Matplotlib.
 
-
-# For windows
-
-# Steps to generate ffmpeg binaries on windows:=
-1. Downaload repo form here - https://github.com/m-ab-s/media-autobuild_suite.git
-2. Run with minimal options selecting shared ffmpeg binaries, See attached files for referencce.
-3. Replace 'https://git.ffmpeg.org/ffmpeg.git' with 'https://git.ffmpeg.org/ffmpeg.git#tag=release/4.1' in 'media-suite_compile.sh'. See attached files for referencce.
-4. In first run it will show some configuration flags, correct them.
-5. During compilation, it will show compilation error for libfdk, replace attached file with problematic file and rerun.
-6. Run gitbash and apply the above  patch -p1 < ffmpeg4_1.patch
-7. Run mingw64_shell.bat and compile it with make
-8. Now build will compete and ffmpeg binaries will be placed in 'bin-video' subfolder.
-
-
-enable x264 , fdkaac cuda and nvenc at media-autobuild_suite
-
-dubleclick  media-autobuild_suite to start the build process
-
-
-# With command line 
-
-https://trac.ffmpeg.org/wiki/CompilationGuide/MinGW
-
-install MSYS2 from ​https://msys2.github.io/.
-
-Then run the mingw64_shell.bat command in the MSYS2 installation home. Be careful not to run the MSYS2 Shell as this will result in FFmpeg's configure saying building an MSYS binary is not recommended and exiting.
-
-Now install requisite packages:
-
-pacman -S make
-
-pacman -S diffutils
-
-pacman -S yasm
-
-
-https://stackoverflow.com/questions/54164545/how-to-compile-ffmpeg-for-windows-statically-with-msys2-environment
-
-msys2_shell.cmd -mingw64
-./configure --pkg-config-flags=--static --disable-shared --enable-static --enable-gpl --disable-w32threads --disable-autodetect
+Image Loading: The image is loaded directly from a URL using urllib and converted into OpenCV’s format.
+Simulating Depth: A synthetic depth map is generated, simulating depth values based on the distance of each pixel from the top-left corner.
+Visualization: The RGB image and the corresponding depth map are displayed side by side using matplotlib for comparison.
+Purpose: Provides foundational code for experimenting with RGB-D image processing and visualization techniques in Python.
 
 
 
 
 
 
-#For Subtitles
-
-ffmpeg -i test4k.mp4 -f srt -i subtitles.srt -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text outputsubtiles.mp4
-
-ffmpeg -i subtitles.mp4 -i subtitles.srt -c copy -c:s mov_text outfile.mp4
 
 
-To split mp4
 
-ffmpeg -i Bunny720p.mp4 -ss 00:10:00 -to 00:20:30 -c copy output2.mp4
+
+
+
+
+
+
+
+## The Common Types of 3D Glasses
+
+There are three types of 3D glasses:
+
+Anaglyph 3D glasses
+Polarized 3D glasses
+Shutter 3D glasses
+Working of all types of 3D glasses is given below;
+
+Anaglyph 3D glasses:
+
+These are the most common and widely used 3D glasses. These glasses are created in a manner where one lens is red, and the other is cyan. These lenses color-filter the layered image we are looking at to create the images we see. Our brain perceives an image as 3D because one lens completely removes all the red in a snap.
+
+However, the other completely removes all of the cyan. Usually, the image we are viewing is the same image projected from two different angles or two completely different shots superimposed.
+
+anaglyph 3d-glasses
+Polarized 3D glasses:
+
+They block light from reaching our eyes, but their golden-brown color prevents red and blue colors from doing so. The image displayed on the screen also plays a part. The projected image is created by superimposing two images through an orthogonal polarizing filter on the same screen in addition to the polarization on the glasses. The glasses' identical type of filter enables each eye to see a separate image on the screen.
+
+polarized 3d-glasses
+Shutter 3D glasses: ( no more this solution is used, it is very expensive)
+
+Shutter glasses are thought to be the most sophisticated 3D glasses currently on the market. Shutter glasses use active 3D instead of the passive 3D used by the other two forms of 3D glasses. They do not use filtered images or colors to produce a three-dimensional illusion.
+
+Shutter glasses operate through LCD screen technology that alternately darkens the left and right lenses. Unless we are paying great attention, we won't notice the lens darkening because it happens so quickly. Shutter glasses are more expensive than conventional 3D glasses and are frequently battery- or even USB-powered. The price of these glasses significantly affects image quality.
+
+shutter 3d-glasses
+
+
+## Reference
+
+Depth estimation
+https://medium.com/artificialis/getting-started-with-depth-estimation-using-midas-and-python-d0119bfe1159
+
+RGBD 
+https://www.geeksforgeeks.org/rgb-d-images-a-comprehensive-overview/
+
+
+source code 
+https://bitbucket.org/stereophotoview/stereophotoview/src/master/
+
+
+ffmpeg option 
+https://trac.ffmpeg.org/wiki/Stereoscopic
+
+3D Glass Selection
+https://exmplayer.sourceforge.net/3d.html
+
