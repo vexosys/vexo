@@ -1,0 +1,10 @@
+ffpyplayer
+mediainfo
+timm
+matplotlib
+opencv-python
+torch 
+torchvision 
+torchaudio
+numpy
+panda
