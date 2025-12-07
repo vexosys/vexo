@@ -1,0 +1,80 @@
+diff --git a/winplayer/ffmpegPlayer/ffplay.c b/winplayer/ffmpegPlayer/ffplay.c
+--- a/winplayer/ffmpegPlayer/ffplay.c
++++ b/winplayer/ffmpegPlayer/ffplay.c
+@@
+-#define Haze_filters 1
++#define Vexo_filters 1
+@@
+-const char program_name[] = "HAZE Player";
++const char program_name[] = "VEXO Player";
+@@
+-#if Haze_filters
++#if Vexo_filters
+@@
+-#if Haze_filters                
++#if Vexo_filters                
+@@
+-#if Haze_filters             
++#if Vexo_filters             
+@@
+-#if Haze_filters  
++#if Vexo_filters  
+
+diff --git a/FFmpeg/fftools/ffplay.c b/FFmpeg/fftools/ffplay.c
+--- a/FFmpeg/fftools/ffplay.c
++++ b/FFmpeg/fftools/ffplay.c
+@@
+-#define Haze_filters 1
++#define Vexo_filters 1
+@@
+-const char program_name[] = "HAZE Player";
++const char program_name[] = "VEXO Player";
+@@
+-#if Haze_filters
++#if Vexo_filters
+@@
+-#if Haze_filters                
++#if Vexo_filters                
+@@
+-#if Haze_filters              
++#if Vexo_filters              
+@@
+-#if Haze_filters  
++#if Vexo_filters  
+
+diff --git a/pkg/macos_package_creation.sh b/pkg/macos_package_creation.sh
+--- a/pkg/macos_package_creation.sh
++++ b/pkg/macos_package_creation.sh
+@@
+-PKG_NAME="hazeplayer-${VERSION}.pkg"
+-IDENTIFIER="com.haze.player"
+-INSTALL_PREFIX="/usr/local/haze"
++PKG_NAME="vexoplayer-${VERSION}.pkg"
++IDENTIFIER="com.vexo.player"
++INSTALL_PREFIX="/usr/local/vexo"
+@@
+-cp ./FFmpeg/ffplay package_root/${INSTALL_PREFIX}/hazeplayer
++cp ./FFmpeg/ffplay package_root/${INSTALL_PREFIX}/vexoplayer
+@@
+-ln -sf ${INSTALL_PREFIX}/hazeplayer /usr/local/bin/hazeplayer
++ln -sf ${INSTALL_PREFIX}/vexoplayer /usr/local/bin/vexoplayer
+@@
+-echo "➡️  After installation, just type 'hazeplayer' in the terminal to run!"
++echo "➡️  After installation, just type 'vexoplayer' in the terminal to run!"
+
+diff --git a/script/README.md b/script/README.md
+--- a/script/README.md
++++ b/script/README.md
+@@
+-git clone https://github.com/InnovatorSol/Haze.git
++git clone https://github.com/vexosys/vexo.git
+@@
+-cd Haze/script
++cd Vexo/script
+
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@
+-https://github.com/InnovatorSol/Haze.git
++https://github.com/vexosys/vexo
