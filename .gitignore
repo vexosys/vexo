@@ -48,3 +48,25 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Log files
+*.tlog
+
+# db files
+*.db*
+
+#Visual studio specific files
+*.ipch
+*.vsidx
+*.suo
+*.obj
+*.ilk
+*.pdb
+*.pdb
+.vs/
+obj/
+ffmpegPlayer.dir/
+Debug/
+Release/
+*.recipe
+/winplayer/ffmpegDlls/bin-video/ffmpegPlayer.exp
+/winplayer/ffmpegDlls/bin-video/avcodec-58.dll
