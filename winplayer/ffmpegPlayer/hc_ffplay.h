@@ -305,6 +305,8 @@ typedef struct VideoState {
     float saturation;  //  0.0, 3.0); (default “1.0”)
     float brightness; // -1.0, 1.0); (default “0.0”)
     float contrast;  // -1000.0, 1000.0); (default “1.0”)
+    bool stereo3D;  //default false
+    char setero3Str[256];
 
 #endif
 

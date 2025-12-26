@@ -715,7 +715,7 @@ void resetPlaylist(VideoState *cur_stream)
     cur_stream->saturation = 1;  //  0.0, 3.0); (default “1.0”)
     cur_stream->brightness = 0; // -1.0, 1.0); (default “0.0”)
     cur_stream->contrast =1;  // -1000.0, 1000.0); (default “1.0”)
-    cur_stream->stereo3D = false;;
+    cur_stream->stereo3D = false;
 }
 
 

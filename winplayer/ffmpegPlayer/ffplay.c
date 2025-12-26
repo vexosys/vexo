@@ -41,7 +41,7 @@
 
 #include "SDL_ttf.h"
 
-
+#include "stereo3d.h"
 #include "gui.h"
 
 volatile bool pause_sdl_event = false;
@@ -119,7 +119,6 @@ static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_RendererInfo renderer_info = {0};
 static SDL_AudioDeviceID audio_dev;
-VideoState* global_video_state = NULL;
 
 static const struct TextureFormatEntry {
     enum AVPixelFormat format;
@@ -1520,7 +1519,7 @@ display:
     return true;
 }
 
-static int queue_picture(VideoState *is, AVFrame *src_frame, double pts, double duration, int64_t pos, int serial)
+int queue_picture(VideoState *is, AVFrame *src_frame, double pts, double duration, int64_t pos, int serial)
 {
     Frame *vp;
 
@@ -1663,10 +1662,9 @@ static int configure_video_filters(AVFilterGraph *graph, VideoState *is, const c
     graph->scale_sws_opts = av_strdup(sws_flags_str);
 
     snprintf(buffersrc_args, sizeof(buffersrc_args),
-             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d",
              frame->width, frame->height, frame->format,
-             is->video_st->time_base.num, is->video_st->time_base.den,
-             codecpar->sample_aspect_ratio.num, FFMAX(codecpar->sample_aspect_ratio.den, 1));
+             is->video_st->time_base.num, is->video_st->time_base.den);
     if (fr.num && fr.den)
         av_strlcatf(buffersrc_args, sizeof(buffersrc_args), ":frame_rate=%d/%d", fr.num, fr.den);
 
@@ -1924,6 +1922,7 @@ static int decoder_start(Decoder *d, int (*fn)(void *), void *arg)
     return 0;
 }
 
+
 static int video_thread(void *arg)
 {
     VideoState *is = arg;
@@ -1946,7 +1945,8 @@ static int video_thread(void *arg)
     float last_saturation = 1;
     float last_brightness = 0;
     float  last_contrast = 1;
-    char *vfilters = NULL;    
+    char *vfilters = NULL;   
+    bool last_stereo3D= false;
 #endif
 
     int last_vfilter_idx = 0;
@@ -1963,6 +1963,9 @@ static int video_thread(void *arg)
 #endif
         return AVERROR(ENOMEM);
     }
+ 
+    AVFrame *tmp = av_frame_alloc();
+
 
     for (;;) {
         ret = get_video_frame(is, frame);
@@ -1970,6 +1973,13 @@ static int video_thread(void *arg)
             goto the_end;
         if (!ret)
             continue;
+
+        AVFrame* frmFinal = NULL;
+        if(Stereo3d(is))
+        {
+            frmFinal = allocatFrame_3d(frame);
+        }
+                
 
 #if CONFIG_AVFILTER
         if (   last_w != frame->width
@@ -1982,11 +1992,12 @@ static int video_thread(void *arg)
             || last_saturation != is->saturation
             || last_brightness != is->brightness
             || last_contrast != is->contrast
+            || last_stereo3D != is->stereo3D
 #endif                
             ) {
 
 #if Haze_filters             
-              set_videoFilter(is, &vfilters, &last_speed, &last_contrast, &last_brightness, &last_saturation);
+              set_videoFilter(is, &vfilters, &last_speed, &last_contrast, &last_brightness, &last_saturation, &last_stereo3D);
 
 #endif
 
@@ -1999,7 +2010,7 @@ static int video_thread(void *arg)
             avfilter_graph_free(&graph);
             graph = avfilter_graph_alloc();
 #if Haze_filters  
-            if ((ret = configure_video_filters(graph, is, vfilters_list ? vfilters_list[is->vfilter_idx] : vfilters, frame)) < 0) 
+            if ((ret = configure_video_filters(graph, is, vfilters_list ? vfilters_list[is->vfilter_idx] : vfilters, Stereo3d(is)? frmFinal:frame)) < 0) 
 #else
             if ((ret = configure_video_filters(graph, is, vfilters_list ? vfilters_list[is->vfilter_idx] : NULL, frame)) < 0) 
 #endif
@@ -2018,6 +2029,18 @@ static int video_thread(void *arg)
             last_serial = is->viddec.pkt_serial;
             last_vfilter_idx = is->vfilter_idx;
             frame_rate = av_buffersink_get_frame_rate(filt_out);
+        }
+        
+        if(Stereo3d(is))
+        {   
+            if( !video_thread_3d( is, tmp, frame,  frmFinal, filt_in, filt_out, frame_rate  ))
+            {
+                continue ;
+            }
+            else
+            {
+                 goto the_end;
+            }
         }
 
         ret = av_buffersrc_add_frame(filt_in, frame);
@@ -2058,6 +2081,7 @@ static int video_thread(void *arg)
     avfilter_graph_free(&graph);
 #endif
     av_frame_free(&frame);
+    av_frame_free(&tmp);
     return 0;
 }
 

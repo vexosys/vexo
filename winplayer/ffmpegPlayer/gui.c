@@ -409,7 +409,7 @@ bool LeftMouseButtonDown(VideoState *cur_stream, SDL_Event *event, int seek_by_b
              }
         }
 
-        for(int i=0; i < CHECKBOX_COUNT; i++) {
+        for(int i=0; i < 1; i++) {
             if(hcp_clickedOnButton(event, &ui_settigs->checkbox[i].rect)) {
 
                 ui_settigs->checkbox[i].checked  = !ui_settigs->checkbox[i].checked;
@@ -430,6 +430,33 @@ bool LeftMouseButtonDown(VideoState *cur_stream, SDL_Event *event, int seek_by_b
             }
         }
     }
+    else if( ui_settigs->activeTab == 3)
+    {
+      
+        for(int i=1; i < CHECKBOX_COUNT; i++) {
+            if(hcp_clickedOnButton(event, &ui_settigs->checkbox[i].rect)) {
+               ui_settigs->checkbox[i].checked  = !ui_settigs->checkbox[i].checked;
+
+                if(ui_settigs->checkbox[i].checked )
+                {
+                    cur_stream->stereo3D = true;
+                    if(i==1)
+                        strcpy( cur_stream->setero3Str , "stereo3d=sbs2l:agmd");        
+                    else
+                       strcpy( cur_stream->setero3Str ,  "stereo3d=sbs2l:arcd");         
+                            
+                }
+                else
+                {
+                   cur_stream->stereo3D = false;
+                }
+                ui_buttons->delayTimer = 360;
+                video_display(cur_stream);
+                return true;
+            }
+        }
+    }
+        
 
     if(hcp_clickedOnButton(event, &ui_buttons->forward_button )) {
 
@@ -688,7 +715,7 @@ void resetPlaylist(VideoState *cur_stream)
     cur_stream->saturation = 1;  //  0.0, 3.0); (default “1.0”)
     cur_stream->brightness = 0; // -1.0, 1.0); (default “0.0”)
     cur_stream->contrast =1;  // -1000.0, 1000.0); (default “1.0”)
-
+    cur_stream->stereo3D = false;
 }
 
 
@@ -1284,7 +1311,7 @@ void set_audioSpeedFilter(VideoState *is,  char **af,  float *last_speed)
     *af = afilters;
 }
 
-void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_contrast, float  *last_brightness, float  *last_saturation)
+void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_contrast, float  *last_brightness, float  *last_saturation,  bool *last_stereo3D)
 {
     char *vfilter =  *vf;
     
@@ -1341,6 +1368,19 @@ void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_
             mouse_fn( is,  0,  incr );
         }
     }
+    else if( is->stereo3D != *last_stereo3D)
+    {
+       if(is->stereo3D)
+       strcpy( vfilter, is->setero3Str);  
+       else
+       {
+            printf("reset stereo3D filters %d \n", is->stereo3D ); 
+            if(vfilter)
+                free(vfilter);
+            vfilter = NULL;
+            resetPlaylist(is);
+       }
+    }
     else
     {
         printf("reset filters %f \n", is->vfilterSpeed ); 
@@ -1355,4 +1395,16 @@ void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_
     *last_contrast = is->contrast;
     *last_brightness = is->brightness;
     *last_saturation = is->saturation;
+    *last_stereo3D = is->stereo3D;
+}
+
+
+bool Stereo3d(VideoState *is)
+{
+   if(is->stereo3D == true)
+       return true;
+   else
+   return false;
+        
+   
 }

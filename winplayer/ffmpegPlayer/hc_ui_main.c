@@ -411,29 +411,37 @@ static void drawButton (SDL_Renderer *renderer, Button *buttons , TTF_Font* font
     SDL_RenderFillRect(renderer, &ui_buttons->eq_bg);
 
     ui_settigs->buttons[0].rect= ui_buttons->eq_bg;
-    ui_settigs->buttons[0].rect.w= ui_buttons->eq_bg.w*0.35;
+    ui_settigs->buttons[0].rect.w= ui_buttons->eq_bg.w/BUTTON_COUNT;;
     ui_settigs->buttons[0].label = "Playlist";
     ui_settigs->buttons[0].color = (SDL_Color){255, 255, 255, 255};
 
 
     ui_settigs->buttons[1].rect= ui_buttons->eq_bg;
     ui_settigs->buttons[1].rect.x= ui_buttons->eq_bg.x + ui_settigs->buttons[0].rect.w;
-    ui_settigs->buttons[1].rect.w= ui_buttons->eq_bg.w*0.40;
+    ui_settigs->buttons[1].rect.w=  ui_buttons->eq_bg.w/BUTTON_COUNT;;
     ui_settigs->buttons[1].label = "Subtitles";
     ui_settigs->buttons[1].color = (SDL_Color){255, 255, 255, 255};
 
 
     ui_settigs->buttons[2].rect= ui_buttons->eq_bg;
     ui_settigs->buttons[2].rect.x= ui_settigs->buttons[1].rect.x + ui_settigs->buttons[1].rect.w;
-    ui_settigs->buttons[2].rect.w= ui_buttons->eq_bg.w/3;
+    ui_settigs->buttons[2].rect.w= ui_buttons->eq_bg.w/BUTTON_COUNT;
     ui_settigs->buttons[2].label = "Video";
     ui_settigs->buttons[2].color = (SDL_Color){255, 255, 255, 255};
+    
+    ui_settigs->buttons[3].rect= ui_buttons->eq_bg;
+    ui_settigs->buttons[3].rect.x= ui_settigs->buttons[2].rect.x + ui_settigs->buttons[2].rect.w;
+    ui_settigs->buttons[3].rect.w= ui_buttons->eq_bg.w/BUTTON_COUNT;
+    ui_settigs->buttons[3].label = "3D";
+    ui_settigs->buttons[3].color = (SDL_Color){255, 255, 255, 255};
+    
 
     ui_settigs->buttons[ui_settigs->activeTab].color = (SDL_Color){185, 185, 185, 255};
 
     drawButton(renderer, &ui_settigs->buttons[0], ui_settigs->font );
     drawButton(renderer, &ui_settigs->buttons[1], ui_settigs->font );
     drawButton(renderer, &ui_settigs->buttons[2], ui_settigs->font );
+    drawButton(renderer, &ui_settigs->buttons[3], ui_settigs->font );
 
 
     switch( ui_settigs->activeTab)
@@ -619,7 +627,19 @@ static void drawButton (SDL_Renderer *renderer, Button *buttons , TTF_Font* font
 
         }
         break;
+        case 3: //3dAnaglyph
+        {
+            ui_settigs->checkbox[1].rect = (SDL_Rect){ui_buttons->eq_bg.x , ui_buttons->eq_bg.y  + ui_settigs->buttons[0].rect.h +10, 16, 16 };
+            ui_settigs->checkbox[1].label = "Red cyan dubois:    ";
+            drawCheckBox (renderer,  &ui_settigs->checkbox[1] , ui_buttons->font );
+            
+            //ui_settigs->checkbox[1].checked = 1;
 
+            ui_settigs->checkbox[2].rect = (SDL_Rect){ ui_buttons->eq_bg.x ,   ui_settigs->checkbox[1].rect.y+16+4, 16, 16 };
+            ui_settigs->checkbox[2].label = "Green magenta dubois:    ";
+            drawCheckBox (renderer,  &ui_settigs->checkbox[2] , ui_buttons->font );
+        }
+        break;
     };
 
 /*

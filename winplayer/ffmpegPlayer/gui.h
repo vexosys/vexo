@@ -69,7 +69,6 @@ void toggle_full_screen(VideoState *is);
 
 void toggle_pause(VideoState *is);
 
-void cleanPlaylist();
 
 void resetPlaylist(VideoState *cur_stream);
 
@@ -103,11 +102,12 @@ void renderGUI(VideoState *is, SDL_Renderer *renderer, int *cursor_hidden);
 
 void set_audioSpeedFilter(VideoState *is,  char **af,  float *last_speed);
 
-void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_contrast, float  *last_brightness, float  *last_saturation);
-
+void set_videoFilter(VideoState *is, char **vf,  float *last_speed, float *last_contrast, float  *last_brightness, float  *last_saturation, bool *last_stereo3D);
 
 void cleanPlaylist(void);
 
 void cleanUI(void);
+
+bool Stereo3d(VideoState *is);
 
 #endif

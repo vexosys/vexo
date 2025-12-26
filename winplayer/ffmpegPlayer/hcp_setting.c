@@ -67,6 +67,7 @@ settings_ui_t *hcp_init_settings_ui(SDL_Renderer *renderer)
     for(int i = 0; i <  CHECKBOX_COUNT ; ++i)
     {
        s_ui->checkbox[i].texture = NULL;
+       s_ui->checkbox[i].checked = false;
     }
 
 

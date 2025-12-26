@@ -11,7 +11,7 @@
 #define SPIN_COUNT 2
 
 #define SLIDER_COUNT 4
-#define CHECKBOX_COUNT 1
+#define CHECKBOX_COUNT 3
 
 #define PLAYLIST_BUTTON 5
 
