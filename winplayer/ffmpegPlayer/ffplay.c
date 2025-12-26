@@ -119,6 +119,7 @@ static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_RendererInfo renderer_info = {0};
 static SDL_AudioDeviceID audio_dev;
+VideoState* global_video_state = NULL;
 
 static const struct TextureFormatEntry {
     enum AVPixelFormat format;
